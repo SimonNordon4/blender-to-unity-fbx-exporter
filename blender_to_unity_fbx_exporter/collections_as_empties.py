@@ -1,7 +1,5 @@
 import bpy
 
-
-
 def create_empties_as_collection_proxy(use_selection=False):
     def create_empty_for_collection(collection):
         print(f"Creating empty for collection: {collection.name}")
@@ -36,15 +34,15 @@ def create_empties_as_collection_proxy(use_selection=False):
     if use_selection:
         collections_to_process = get_collections_with_selected_objects()
     else:
-        collections_to_process = bpy.context.scene.collection.children
-    
-    print(f"Collections to process: {collections_to_process}")    
+        collections_to_process = bpy.context.scene.collection.children_recursive
     
     collection_proxy_dict = {}
+    empties = []
     
     for collection in collections_to_process:
         # Create an empty for the collection
         empty = create_empty_for_collection(collection)
+        empties.append(empty)
         collection_proxy_dict[collection] = empty
         
         if use_selection:
@@ -65,12 +63,23 @@ def create_empties_as_collection_proxy(use_selection=False):
                 child_empty = collection_proxy_dict[child]
                 print(f"Found {child_empty.name} is a child of {empty.name}")
                 child_empty.parent = empty
+                
+    if use_selection:
+         # Select the empties
+            for empty in collection_proxy_dict.values():
+                empty.select_set(True)
+        
 
     # Return the created empties for reference
-    return list(collection_proxy_dict.values())
+    return empties
 
-# Call the function
-empties = create_empties_as_collection_proxy(use_selection=True)
-print("Created empties:", empties)
+def remove_empties(empties):
+    print("Removing empties")
+    for empty in list(empties):  # Create a copy of the list to iterate over
+        if empty.name in bpy.data.objects:  # Check by object name
+            bpy.data.objects.remove(empty, do_unlink=True)
+            
+    
+
 
 

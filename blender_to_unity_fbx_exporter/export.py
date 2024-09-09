@@ -2,6 +2,8 @@ import bpy
 import mathutils
 import math
 
+from . import collections_as_empties
+
 # Multi-user datablocks are preserved here. Unique copies are made for applying the rotation.
 # Eventually multi-user datablocks become single-user and gets processed.
 # Therefore restoring the multi-user data assigns a shared but already processed datablock.
@@ -206,6 +208,10 @@ def export_unity_fbx(context, filepath, active_collection, selected_objects, exp
 		bpy.ops.object.select_all(action='DESELECT')
 		for ob in selection:
 			ob.select_set(True)
+   
+		if export_collections_as_empties:
+			empties = collections_as_empties.create_empties_as_collection_proxy(use_selection=selected_objects)
+			
 
 		# Export FBX file
 		params = dict(filepath=filepath,
@@ -226,15 +232,23 @@ def export_unity_fbx(context, filepath, active_collection, selected_objects, exp
 		bpy.ops.export_scene.fbx(**params)
 
 	except Exception as e:
+		if export_collections_as_empties:
+			collections_as_empties.remove_empties(empties=empties)
+     
 		bpy.ops.ed.undo_push(message="")
 		bpy.ops.ed.undo()
 		bpy.ops.ed.undo_push(message="Export Unity FBX")
+  
 		print(e)
 		print("File not saved.")
 		# Always finish with 'FINISHED' so Undo is handled properly
 		return {'FINISHED'}
 
 	# Restore scene and finish
+
+	# Remove proxy Empties that were created.
+	if export_collections_as_empties:
+		collections_as_empties.remove_empties(empties=empties)
 
 	bpy.ops.ed.undo_push(message="")
 	bpy.ops.ed.undo()
