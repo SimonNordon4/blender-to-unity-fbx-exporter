@@ -28,6 +28,10 @@ def create_empties_as_collection_proxy(use_selection=False):
             for col in obj.users_collection:
                 selected_collections.add(col)
         return selected_collections
+    
+    def add_empty_to_collection(collection, empty):
+        # Add the empty to the collection
+        collection.objects.link(empty)
 
 
     # Get a list of our collections to process.
@@ -64,6 +68,9 @@ def create_empties_as_collection_proxy(use_selection=False):
                 print(f"Found {child_empty.name} is a child of {empty.name}")
                 child_empty.parent = empty
                 
+        # add the empty to the collection
+        add_empty_to_collection(collection, empty) if empty else None
+                
     if use_selection:
          # Select the empties
             for empty in collection_proxy_dict.values():
@@ -78,6 +85,7 @@ def remove_empties(empties):
     for empty in list(empties):  # Create a copy of the list to iterate over
         if empty.name in bpy.data.objects:  # Check by object name
             bpy.data.objects.remove(empty, do_unlink=True)
+            
             
     
 
