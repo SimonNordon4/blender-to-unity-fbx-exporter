@@ -3,10 +3,8 @@ import sys
 import os
 import importlib
 
-
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
     
-
 import blender_to_unity_fbx_exporter.properties as properties
 import blender_to_unity_fbx_exporter.export as export
 import blender_to_unity_fbx_exporter.collections_as_empties as collections_as_empties

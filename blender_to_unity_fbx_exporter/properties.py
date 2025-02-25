@@ -117,7 +117,7 @@ class ExportUnityFbx(Operator, ExportHelper):
 
 		# Selection Box
 		box = layout.box()
-		box.label(text="Selection", icon='OBJECT_DATA')
+		box.label(text="Selection 2", icon='OBJECT_DATA')
 		box.prop(self, "active_collection", text="Active Collection")
 		box.prop(self, "selected_objects", text="Selected Objects")
 
